@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.geometry.Insets?>
+
+<BorderPane fx:controller="de.hsh.arsnova.gui.controller.LoginController" xmlns:fx="http://javafx.com/fxml/1"
+	stylesheets="de/hsh/arsnova/css/Login.css">
+	<center>
+		<VBox xmlns:fx="http://javafx.com/fxml" alignment="CENTER"  maxHeight="200"  maxWidth="300" spacing="10">
+			<padding>
+				<Insets top="15" right="15" bottom="15" left="15"/>
+			</padding>
+			<TextField fx:id="nameField" />
+			<PasswordField fx:id="passwordField"/>
+			<Button fx:id="loginButton" defaultButton="true" text="Connect" onAction="#login"/>
+			<Label fx:id="errorLabel"/>
+		</VBox>
+	</center>
+</BorderPane>
+
