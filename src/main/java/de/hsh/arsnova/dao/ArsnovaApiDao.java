@@ -36,7 +36,8 @@ public class ArsnovaApiDao {
 	private String sessionIdCookie;
 	private int sessionId;
 
-	private final String apiUrl="https://192.168.56.102/backend/";
+	//TODO: Add option menu/config
+	private final String apiUrl="https://192.168.56.101/backend/";
 
 	static{
 		//TODO: Only for testing
@@ -151,6 +152,7 @@ public class ArsnovaApiDao {
 		this.sessionId=id;
 	}
 
+	//http://stackoverflow.com/questions/875467/java-client-certificates-over-https-ssl
 	private static void disableSslVerification() {
 		try
 		{
