@@ -11,6 +11,36 @@ public class LecturerQuestion {
 	private String text;
 	PossibleAnswer[] possibleAnswers;
 	private Long timestamp;
+	private boolean votingDisabled;
+	private long piRoundStartTime;
+	private long piRoundEndTime;
+	private boolean piRoundActive;
+	
+	
+	public boolean isVotingDisabled() {
+		return votingDisabled;
+	}
+	public void setVotingDisabled(boolean votingDisabled) {
+		this.votingDisabled = votingDisabled;
+	}
+	public long getPiRoundStartTime() {
+		return piRoundStartTime;
+	}
+	public void setPiRoundStartTime(long piRoundStartTime) {
+		this.piRoundStartTime = piRoundStartTime;
+	}
+	public long getPiRoundEndTime() {
+		return piRoundEndTime;
+	}
+	public void setPiRoundEndTime(long piRoundEndTime) {
+		this.piRoundEndTime = piRoundEndTime;
+	}
+	public boolean isPiRoundActive() {
+		return piRoundActive;
+	}
+	public void setPiRoundActive(boolean piRoundActive) {
+		this.piRoundActive = piRoundActive;
+	}
 	
 	public Long getTimestamp() {
 		return timestamp;

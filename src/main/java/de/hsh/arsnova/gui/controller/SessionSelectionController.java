@@ -10,6 +10,7 @@ import org.springframework.stereotype.Controller;
 import de.hsh.arsnova.dao.ArsnovaApiDao;
 import de.hsh.arsnova.gui.ScreensManager;
 import de.hsh.arsnova.model.Session;
+import de.hsh.arsnova.websocket.WebsocketClient;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -22,6 +23,9 @@ public class SessionSelectionController implements Initializable{
 
 	private HashMap<String, Session> sessions;
 
+	@Autowired
+	private WebsocketClient wsClient;
+	
 	@Autowired
 	private ArsnovaApiDao arsnovaApi;
 	
@@ -39,7 +43,9 @@ public class SessionSelectionController implements Initializable{
 	{
 		if(sessionCombo.getValue()!=null)
 		{
-			arsnovaApi.setSession(sessions.get(sessionCombo.getValue()).getKeyword());
+			int keyword=sessions.get(sessionCombo.getValue()).getKeyword();
+			wsClient.setSession(keyword);
+			arsnovaApi.setSession(keyword);
 			screensManager.showSessionManagerScreen();
 		}
 	}

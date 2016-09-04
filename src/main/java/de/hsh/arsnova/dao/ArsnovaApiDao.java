@@ -1,15 +1,10 @@
 package de.hsh.arsnova.dao;
 
 import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.net.URLEncoder;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
-import java.util.List;
-import java.util.Map;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
@@ -23,15 +18,16 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.util.concurrent.ListenableFuture;
+import org.springframework.web.client.AsyncRestTemplate;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
 
+import de.hsh.arsnova.gui.controller.LoginController;
 import de.hsh.arsnova.model.LecturerQuestion;
 import de.hsh.arsnova.model.Session;
-import javafx.util.Pair;
 
 @Component
-public class ArsnovaApiDao {
+public class ArsnovaApiDao{
 
 	private String sessionIdCookie;
 	private int sessionId;
@@ -44,99 +40,88 @@ public class ArsnovaApiDao {
 		disableSslVerification();
 	}
 
-	public Pair<Integer, String> login(String username, String password)
+	public String getSessionId()
 	{
-		HttpsURLConnection connection=null;
-		OutputStreamWriter writer =null;
+		return sessionIdCookie;
+	}
+	
+	public void setSessionId(String sessionIdCookie)
+	{
+		this.sessionIdCookie=sessionIdCookie;
+	}
+
+	public void login(String username, String password, LoginController loginController)
+	{
+		ListenableFuture<ResponseEntity<String>> futureEntity=null;
 		try {
 			String body = "type=" + URLEncoder.encode( "ldap", "UTF-8" ) + "&" +
 					"user=" + URLEncoder.encode( username, "UTF-8" ) + "&" +
 					"password=" + URLEncoder.encode( password, "UTF-8" );
-
-			URL url = new URL( apiUrl+"auth/login" );
-			connection = (HttpsURLConnection) url.openConnection();
-			connection.setRequestMethod( "POST" );
-			connection.setDoInput( true );
-			connection.setDoOutput( true );
-			connection.setUseCaches( false );
-			connection.setRequestProperty( "Content-Type",
-					"application/x-www-form-urlencoded" );
-			connection.setRequestProperty( "Content-Length", String.valueOf(body.length()) );
-			writer = new OutputStreamWriter( connection.getOutputStream() );
-			writer.write( body );
-			writer.flush();
-			if(connection.getResponseCode()==HttpURLConnection.HTTP_OK)
-			{
-				Map<String, List<String>> header=connection.getHeaderFields();
-				outMostFor:
-					for(String hName:header.keySet())
-					{
-						if(hName!=null&&hName.equals("Set-Cookie"))
-						{
-							for(String hCont:header.get(hName)){
-								String[] cooks=hCont.split("; ");
-								for(String s:cooks)
-								{
-									if(s.startsWith("JSESSIONID"))
-									{
-										sessionIdCookie=s;
-										break outMostFor;
-									}
-								}
-							}
-						}
-					}
-			}
-			writer.close();
+			HttpHeaders headers=new HttpHeaders();
+			headers.add("Content-Type", "application/x-www-form-urlencoded");
+			HttpEntity<?> requestEntity = new HttpEntity<>(body,headers);
+			AsyncRestTemplate restTemplate=new AsyncRestTemplate();
+			futureEntity=restTemplate.exchange(apiUrl+"auth/login", HttpMethod.POST, requestEntity, String.class);
+			futureEntity.addCallback(loginController::onLoginSuccess, loginController::onLoginError);
 		}
 		catch(IOException ex)
 		{
 			ex.printStackTrace();
 		}
-		finally{
-			try {
-				if(writer!=null)
-					writer.close();
-			} catch (IOException e) {}
-		}
-		if(connection!=null)
-		{
-			try {
-				return new Pair<Integer, String>(connection.getResponseCode(), connection.getResponseMessage());
-			} catch (IOException e) {e.printStackTrace();}
-		}	
-		return new Pair<Integer, String>(-1, "Unknown Error");
 	}
 
 	public Session[] getSessions(){
-		try{
-			String requestUrl=apiUrl+"session/";
-
-			HttpHeaders requestHeaders = new HttpHeaders();
-			requestHeaders.add("Cookie", sessionIdCookie);
-			HttpEntity<?> requestEntity = new HttpEntity<>(null, requestHeaders);
-			RestTemplate restTemplate=new RestTemplate();
-			UriComponentsBuilder builder=UriComponentsBuilder.fromHttpUrl(requestUrl).queryParam("ownedonly", true);
-
-			ResponseEntity<Session[]> response=restTemplate.exchange(builder.build().encode().toUri(), HttpMethod.GET, requestEntity, Session[].class);
-			return response.getBody();
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
-		}
+		String requestUrl=apiUrl+"session/?ownedonly=true";
+		Object ss=sendRequest(requestUrl,  HttpMethod.GET, Session[].class);
+		if(ss!=null)
+			return (Session[]) ss;
 		return new Session[0];
 	}
 
-	public LecturerQuestion[] getLecturerQuestion()
+	public LecturerQuestion[] getLecturerQuestions()
+	{
+		String requestUrl=apiUrl+"lecturerquestion/?sessionkey="+sessionId;
+		Object lqs=sendRequest(requestUrl, HttpMethod.GET, LecturerQuestion[].class);
+		if(lqs!=null)
+			return (LecturerQuestion[])lqs;
+		return new LecturerQuestion[0];
+	}
+	
+	public LecturerQuestion getLecturerQuestion(String questionId)
+	{
+		String requestUrl=apiUrl+"/lecturerquestion/"+questionId;
+		Object lqs=sendRequest(requestUrl, HttpMethod.GET, LecturerQuestion.class);
+		if(lqs!=null)
+			return (LecturerQuestion)lqs;
+		return null;
+	}
+
+	public void startPiRound(String questionid, int duration)
+	{
+		String requestUrl=apiUrl+"lecturerquestion/"+questionid+"/startnewpiround?time="+duration;
+		sendRequest(requestUrl, HttpMethod.POST, String.class);
+	}
+	
+	public void cancelPiRound(String questionid)
+	{
+		String requestUrl=apiUrl+"lecturerquestion/"+questionid+"/canceldelayedpiround";
+		sendRequest(requestUrl, HttpMethod.POST, String.class);
+	}
+
+	public void publishQuestion(boolean publish, String questionId)
+	{
+		String requestUrl=apiUrl+"lecturerquestion/"+questionId+"/disablevote?disable="+(publish ? 0:1);
+		sendRequest(requestUrl, HttpMethod.POST, String.class);
+	}
+
+	private Object sendRequest(String url, HttpMethod method, Class<?> c)
 	{
 		try{
-			String requestUrl=apiUrl+"lecturerquestion/?sessionkey="+sessionId;
 			HttpHeaders requestHeaders = new HttpHeaders();
 			requestHeaders.add("Cookie", sessionIdCookie);
 			HttpEntity<?> requestEntity = new HttpEntity<>(null, requestHeaders);
 			RestTemplate restTemplate=new RestTemplate();
-			ResponseEntity<LecturerQuestion[]> response=restTemplate.exchange(requestUrl, HttpMethod.GET, requestEntity, LecturerQuestion[].class);
+			ResponseEntity<?> response=restTemplate.exchange(url, method, requestEntity, c);
 			if(response.getBody()!=null)
 				return response.getBody();
 		}
@@ -144,7 +129,7 @@ public class ArsnovaApiDao {
 		{
 			e.printStackTrace();
 		}
-		return new LecturerQuestion[0];
+		return null;
 	}
 
 	public void setSession(int id)

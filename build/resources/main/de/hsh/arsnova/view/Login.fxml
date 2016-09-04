@@ -13,8 +13,8 @@
 			<padding>
 				<Insets top="15" right="15" bottom="15" left="15"/>
 			</padding>
-			<TextField fx:id="nameField" />
-			<PasswordField fx:id="passwordField"/>
+			<TextField fx:id="nameField" promptText="Username"/>
+			<PasswordField fx:id="passwordField" promptText="Password"/>
 			<Button fx:id="loginButton" defaultButton="true" text="Connect" onAction="#login"/>
 			<Label fx:id="errorLabel"/>
 		</VBox>

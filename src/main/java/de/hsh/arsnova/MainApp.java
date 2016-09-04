@@ -7,8 +7,10 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 
 import de.hsh.arsnova.gui.ScreensManager;
 import de.hsh.arsnova.util.SpringFxmlLoader;
+import de.hsh.arsnova.websocket.WebsocketClient;
 import javafx.application.Application;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 public class MainApp extends Application{
 
@@ -24,8 +26,14 @@ public class MainApp extends Application{
 		
 		appContext.getBean(SpringFxmlLoader.class).setApplicationContext(appContext);
 		
+		primaryStage.setOnCloseRequest(we->{
+			appContext.getBean(WebsocketClient.class).disconnect();
+		});
+		
 		ScreensManager screensManager=appContext.getBean(ScreensManager.class);
 		primaryStage.setTitle(String.format("%s %s", name, version));
+		primaryStage.initStyle(StageStyle.UTILITY);
+		primaryStage.setAlwaysOnTop(true);
 		screensManager.setPrimaryStage(primaryStage);
 		screensManager.showLoginScreen();
 		

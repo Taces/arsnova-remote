@@ -5,6 +5,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
 
 <BorderPane fx:controller="de.hsh.arsnova.gui.controller.SessionManagerController" xmlns:fx="http://javafx.com/fxml/1">
 	<top>
@@ -18,21 +19,35 @@
 	<center>
 		<VBox xmlns:fx="http://javafx.com/fxml" alignment="CENTER" spacing="10">
 			<padding>
-				<Insets top="0" right="15" bottom="15" left="15"/>
+				<Insets top="0" right="15" bottom="0" left="15"/>
 			</padding>
 			<ComboBox fx:id="subjectCombo" promptText="Choose subject" prefWidth="300"/>
 			<ComboBox fx:id="questionCombo" promptText="Choose question" prefWidth="300"/>
-			<HBox xmlns:fx="http://javafx.com/fxml" alignment="BOTTOM_CENTER">
-				<TextField fx:id="countdownTextfield" text="30" prefWidth="40"/>
-				<Label text="s"/>
-				<Button fx:id="openQuestionButton" text="Open question" onAction="#openQuestion" >
-					 <HBox.margin>
-		                <Insets>
-		                    <left>10</left>
-		                </Insets>
-		            </HBox.margin>
-	            </Button>
+			<HBox xmlns:fx="http://javafx.com/fxml" alignment="CENTER" spacing="50">
+				<HBox xmlns:fx="http://javafx.com/fxml" alignment="BOTTOM_LEFT">
+					<TextField fx:id="countdownTextfield" text="30" prefWidth="40"/>
+					<Label text="s"/>
+					<Button fx:id="startPiRoundButton" text="Start round" onAction="#startPiRound" >
+						 <HBox.margin>
+			                <Insets>
+			                    <left>10</left>
+			                </Insets>
+			            </HBox.margin>
+		            </Button>
+				</HBox>
+				<HBox xmlns:fx="http://javafx.com/fxml" alignment="BOTTOM_RIGHT">
+					<Button fx:id="openQuestionButton" text="Open Question" onAction="#openQuestion" />
+				</HBox>
 			</HBox>
 		</VBox>
 	</center>
+	<bottom>
+	<HBox fx:id ="statusBox" xmlns:fx="http://javafx.com/fxml" visible="false">
+		<padding>
+				<Insets top="5" right="5" bottom="5" left="15"/>
+			</padding>
+			<Label text="Question status: " />
+			<Label fx:id="statusLabel" text="Active" />
+		</HBox>
+	</bottom>
 </BorderPane>
