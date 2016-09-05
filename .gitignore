@@ -2,8 +2,7 @@
 
 .gradle/
 gradle
-build/distributions
-build/libs
+build/
 
 .metadata
 bin/
