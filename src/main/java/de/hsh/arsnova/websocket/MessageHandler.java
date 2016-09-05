@@ -32,6 +32,16 @@ public class MessageHandler {
 			sessionManager.receivedEvent(eventName, json.getString(1));
 			break;
 		}
+		case "unansweredLecturerQuestions":
+		case "unansweredPreparationQuestions":
+		case "countLectureQuestionAnswers":
+		case "countPreparationQuestionAnswers":
+		case "learningProgressOptions":
+		case "feedbackData":
+		case "feedbackDataRoundedAverage":
+		case "learningProgressChange":
+		case "answersToLecQuestionAvail":
+		case "countQuestionAnswersByQuestionId":
 		case "activeUserCountData":
 			break;
 		default:

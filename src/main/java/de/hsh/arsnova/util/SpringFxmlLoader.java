@@ -40,5 +40,5 @@ public class SpringFxmlLoader {
 
 	 public void setApplicationContext(ApplicationContext applicationContext) {
 			this.applicationContext = applicationContext;
-		}
+	}
 }

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.chart.*?>
+<?import javafx.scene.control.Button?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.hsh.arsnova.gui.controller.AnswerPanelController">
+	<center>
+	<Button fx:id="bla"/>
+		<BarChart fx:id="barChart">
+	        <xAxis>
+	          <CategoryAxis fx:id="xAxis" side="BOTTOM" />
+	        </xAxis>
+	        <yAxis>
+	          <NumberAxis fx:id="yAxis" side="LEFT" />
+	        </yAxis>
+	    </BarChart>
+	</center>
+</BorderPane>
+

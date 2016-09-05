@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.ResourceBundle;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
@@ -43,38 +42,60 @@ public class SessionManagerController implements Initializable{
 
 	@Autowired
 	private ScreensManager screensManager;
+	
+	@Autowired
+	private AnswerPanelController answerController;
 
 	@Autowired
 	private ArsnovaApiDao arsnovaApi;
 
 	@FXML
-	Button backButton;
+	private Button backButton;
 
 	@FXML
-	ComboBox<String> questionCombo;
+	private ComboBox<String> questionCombo;
 
 	@FXML
-	ComboBox<String> subjectCombo;
+	private ComboBox<String> subjectCombo;
 
 	@FXML
-	TextField countdownTextfield;
+	private TextField countdownTextfield;
 
 	@FXML
-	Button startPiRoundButton;
+	private Button startPiRoundButton;
 
 	@FXML
-	Button openQuestionButton;
+	private Button openQuestionButton;
+	
+	@FXML
+	private Button showAnswersButton;
 
 	@FXML
-	HBox statusBox;
+	private HBox statusBox;
 
 	@FXML
-	Label statusLabel;
+	private Label statusLabel;
 
 	@FXML
 	protected void goBack(ActionEvent e)
 	{
 		screensManager.showSessionSelectionScreen();
+	}
+	
+	@FXML
+	protected void showAnswers(ActionEvent e)
+	{
+		showAnswers();
+	}
+	
+	private void showAnswers()
+	{
+		screensManager.showAnswers();
+		LecturerQuestion lq=getCurrentlySelectedQuestion();
+		Platform.runLater(()->
+		{
+			answerController.updateChart(lq.getText(), lq.getPossibleAnswers(), arsnovaApi.getAnswers(lq.get_id()));
+		});
 	}
 
 	@FXML
@@ -165,6 +186,7 @@ public class SessionManagerController implements Initializable{
 	public void receivedEvent(String eventName, String questionId)
 	{
 		boolean updateQuestion=true;
+		boolean showAnswers=false;
 		switch(eventName)
 		{
 		case "endPiRound":
@@ -174,6 +196,7 @@ public class SessionManagerController implements Initializable{
 			countdownTimeline.stop();
 			countdownTextfield.setEditable(true);
 			countdownTextfield.setText("30");
+			showAnswers=true;
 			break;
 		}
 		case "startDelayedPiRound":
@@ -189,7 +212,7 @@ public class SessionManagerController implements Initializable{
 		}
 		case "lockVote":
 		{
-			startPiRoundButton.setDisable(true);
+			startPiRoundButton.setDisable(false);
 			break;
 		}
 		default:
@@ -204,6 +227,8 @@ public class SessionManagerController implements Initializable{
 			fetchQuestionUpdate(questionId);
 			updateStatus();
 		}
+		if(showAnswers)
+			showAnswers();
 	}
 
 	public void fetchQuestionUpdate(String questionId)

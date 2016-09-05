@@ -28,6 +28,7 @@ public class MainApp extends Application{
 		
 		primaryStage.setOnCloseRequest(we->{
 			appContext.getBean(WebsocketClient.class).disconnect();
+			appContext.getBean(ScreensManager.class).closeAnswers();
 		});
 		
 		ScreensManager screensManager=appContext.getBean(ScreensManager.class);

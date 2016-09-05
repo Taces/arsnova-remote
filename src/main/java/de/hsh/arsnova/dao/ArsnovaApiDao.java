@@ -23,6 +23,7 @@ import org.springframework.web.client.AsyncRestTemplate;
 import org.springframework.web.client.RestTemplate;
 
 import de.hsh.arsnova.gui.controller.LoginController;
+import de.hsh.arsnova.model.Answer;
 import de.hsh.arsnova.model.LecturerQuestion;
 import de.hsh.arsnova.model.Session;
 
@@ -44,7 +45,7 @@ public class ArsnovaApiDao{
 	{
 		return sessionIdCookie;
 	}
-	
+
 	public void setSessionId(String sessionIdCookie)
 	{
 		this.sessionIdCookie=sessionIdCookie;
@@ -86,7 +87,22 @@ public class ArsnovaApiDao{
 			return (LecturerQuestion[])lqs;
 		return new LecturerQuestion[0];
 	}
-	
+
+	public Answer[] getAnswers(String questionId)
+	{
+		//Can't use the getAll parameter, as this doesn't set the pi round
+		String requestUrl=apiUrl+"lecturerquestion/"+questionId+"/answer/?piround=";
+		Answer[] a1=(Answer[])sendRequest(requestUrl+"1", HttpMethod.GET, Answer[].class);
+		Answer[] a2=(Answer[])sendRequest(requestUrl+"2", HttpMethod.GET, Answer[].class);
+		Answer[] all=new Answer[a1.length+a2.length];
+		int counter=0;
+		for(Answer a:a1)
+			all[counter++]=a;
+		for(Answer a:a2)
+			all[counter++]=a;
+		return all;
+	}
+
 	public LecturerQuestion getLecturerQuestion(String questionId)
 	{
 		String requestUrl=apiUrl+"/lecturerquestion/"+questionId;
@@ -101,7 +117,7 @@ public class ArsnovaApiDao{
 		String requestUrl=apiUrl+"lecturerquestion/"+questionid+"/startnewpiround?time="+duration;
 		sendRequest(requestUrl, HttpMethod.POST, String.class);
 	}
-	
+
 	public void cancelPiRound(String questionid)
 	{
 		String requestUrl=apiUrl+"lecturerquestion/"+questionid+"/canceldelayedpiround";
