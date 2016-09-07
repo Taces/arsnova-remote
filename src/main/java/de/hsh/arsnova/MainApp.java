@@ -6,6 +6,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import de.hsh.arsnova.gui.ScreensManager;
+import de.hsh.arsnova.util.ExternalConfig;
 import de.hsh.arsnova.util.SpringFxmlLoader;
 import de.hsh.arsnova.websocket.WebsocketClient;
 import javafx.application.Application;
@@ -28,7 +29,7 @@ public class MainApp extends Application{
 		
 		primaryStage.setOnCloseRequest(we->{
 			appContext.getBean(WebsocketClient.class).disconnect();
-			appContext.getBean(ScreensManager.class).closeAnswers();
+			appContext.getBean(ScreensManager.class).closeOtherWindows();
 		});
 		
 		ScreensManager screensManager=appContext.getBean(ScreensManager.class);
@@ -37,6 +38,10 @@ public class MainApp extends Application{
 		primaryStage.setAlwaysOnTop(true);
 		screensManager.setPrimaryStage(primaryStage);
 		screensManager.showLoginScreen();
+		
+		ExternalConfig.initConfig();
+		ExternalConfig.setAppContext(appContext);
+		ExternalConfig.injectProperties();
 		
 		logger.log(Level.INFO, String.format("%s %s was launched", name, version));
 	}

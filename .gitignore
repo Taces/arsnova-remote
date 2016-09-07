@@ -3,6 +3,7 @@
 .gradle/
 gradle
 build/
+config.cfg
 
 .metadata
 bin/

@@ -1,14 +1,10 @@
 package de.hsh.arsnova.gui;
 
-import java.net.URL;
-import java.util.ResourceBundle;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import de.hsh.arsnova.util.SpringFxmlLoader;
 import javafx.application.Platform;
-import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -22,6 +18,7 @@ public class ScreensManager{
 	private SpringFxmlLoader fxmlLoader;
 
 	private Stage primaryStage;
+	private Stage optionsStage;
 
 	public void setPrimaryStage(Stage primaryStage) {
 		this.primaryStage = primaryStage;
@@ -51,10 +48,31 @@ public class ScreensManager{
 			answerStage.show();
 		});
 	}
-
-	public void closeAnswers()
+	
+	public void showOptions()
 	{
-		answerStage.close();
+		Platform.runLater(()->{
+			if(optionsStage!=null)
+				optionsStage.close();
+			optionsStage= new Stage();
+			optionsStage.setTitle("Options");
+			Parent root=(Parent) fxmlLoader.load("de/hsh/arsnova/view/OptionsPanel.fxml");
+			optionsStage.setScene(new Scene(root, 350, 150));
+			optionsStage.show();
+		});
+	}
+
+	public void closeOtherWindows()
+	{
+		if(answerStage!=null)
+			answerStage.close();
+		closeOptionsWindow();
+	}
+	
+	public void closeOptionsWindow()
+	{
+		if(optionsStage!=null)
+			optionsStage.close();
 	}
 
 	private void loadAndShowScreen(String url)

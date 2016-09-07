@@ -43,6 +43,9 @@ public class LoginController {
 
 	@FXML
 	private Button loginButton;
+	
+	@FXML
+	private Button optionsButton;
 
 	@FXML
 	private Label errorLabel;
@@ -54,6 +57,12 @@ public class LoginController {
 		String password=passwordField.getText();
 		arsnovaApi.login(username, password, this);
 		disableDuringLogin();
+	}
+	
+	@FXML
+	protected void openOptions(ActionEvent e)
+	{
+		screensManager.showOptions();
 	}
 
 	public void onLoginSuccess(ResponseEntity<String> response)

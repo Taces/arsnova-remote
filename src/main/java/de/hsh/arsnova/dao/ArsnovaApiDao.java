@@ -33,12 +33,16 @@ public class ArsnovaApiDao{
 	private String sessionIdCookie;
 	private int sessionId;
 
-	//TODO: Add option menu/config
-	private final String apiUrl="https://192.168.56.101/backend/";
+	private String apiUrl=null;
 
 	static{
 		//TODO: Only for testing
 		disableSslVerification();
+	}
+	
+	public void setApiUrl(String url)
+	{
+		this.apiUrl=url;
 	}
 
 	public String getSessionId()

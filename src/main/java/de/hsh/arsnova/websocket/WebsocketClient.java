@@ -28,7 +28,7 @@ public class WebsocketClient{
 
 	private static final Logger logger=Logger.getLogger(WebsocketClient.class);
 
-	private final String apiUrl="https://192.168.56.101/backend/";
+	private String apiUrl=null;
 	private String socketId;
 	private String sessionIdCookie;
 	private WebSocket websocket=null;
@@ -36,6 +36,11 @@ public class WebsocketClient{
 	@Autowired
 	MessageHandler messageHandler;
 
+	public void setApiUrl(String url)
+	{
+		this.apiUrl=url;
+	}
+	
 	public void connect(String sessionIdCookie)
 	{
 		this.sessionIdCookie=sessionIdCookie;
