@@ -89,7 +89,7 @@ public class WebsocketClient{
 						}
 					})
 					.connect();
-		} catch (NoSuchAlgorithmException | WebSocketException | IOException e) {
+		} catch (WebSocketException | IOException | NoSuchAlgorithmException e) {
 			e.printStackTrace();
 		}
 	}

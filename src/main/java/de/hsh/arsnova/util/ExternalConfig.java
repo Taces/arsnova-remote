@@ -48,7 +48,7 @@ public class ExternalConfig {
 	private static void createConfig() throws IOException
 	{
 		properties = new Properties();
-		properties.setProperty(API_URL, "https://192.168.56.101/backend/");
+		properties.setProperty(API_URL, "https://arsnova.eu/api/");
 		saveConfig();
 	}
 	
